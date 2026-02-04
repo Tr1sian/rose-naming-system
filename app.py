@@ -3,137 +3,79 @@ import pandas as pd
 import random
 import os
 
-# ================= 1. 极致苹果美学 (全环境暴力修复方案) =================
-st.set_page_config(page_title="RoseNamer Elite", page_icon="🍎", layout="centered")
+# ================= 页面配置 =================
+st.set_page_config(
+    page_title="RoseNamer Elite",
+    page_icon="🌹",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
+# ================= 极简苹果风 UI =================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Inter:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Inter:wght@400;600&display=swap');
 
-    /* 1. 暴力重置全局背景及文字，屏蔽一切深色模式 */
-    html, body, [data-testid="stAppViewContainer"] {
-        background-color: #F5F5F7 !important;
-        color: #1D1D1F !important;
-    }
+html, body, [data-testid="stAppViewContainer"] {
+    background-color: #F5F5F7 !important;
+    color: #1D1D1F !important;
+}
 
-    /* 2. 标题区美化：位置下移、排版艺术 */
-    .header-box {
-        padding-top: 80px;
-        padding-bottom: 20px;
-        text-align: center;
-    }
-    .artistic-title {
-        font-family: 'Noto Serif SC', serif;
-        font-size: 54px;
-        font-weight: 900;
-        color: #1D1D1F !important;
-        letter-spacing: 16px;
-        margin-bottom: 10px;
-    }
-    .artistic-subtitle {
-        font-family: 'Inter', sans-serif;
-        color: #86868B !important;
-        font-size: 13px;
-        letter-spacing: 6px;
-        text-transform: uppercase;
-    }
+.header-box {padding-top:80px;text-align:center;}
+.artistic-title {
+    font-family:'Noto Serif SC',serif;
+    font-size:54px;font-weight:900;letter-spacing:16px;
+}
+.artistic-subtitle {
+    font-family:'Inter',sans-serif;
+    color:#86868B;font-size:13px;letter-spacing:6px;
+}
 
-    /* 3. 【核心修正】强制锁死的纯白立体控制台 */
-    div[data-testid="stVerticalBlockBorderWrapper"]:first-of-type {
-        max-width: 580px !important;
-        margin: 0 auto !important;
-        background-color: #FFFFFF !important; /* 改用实体白，防止被底层颜色穿透 */
-        border: 1px solid #D2D2D7 !important;
-        border-radius: 28px !important;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.05) !important;
-        padding: 40px !important;
-    }
+.panel {
+    max-width:580px;margin:0 auto;
+    background:#FFFFFF;border-radius:28px;
+    border:1px solid #D2D2D7;padding:40px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.05);
+}
 
-    /* 4. 彻底解决并排失效的问题 */
-    div[data-testid="stHorizontalBlock"] {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        gap: 15px !important;
-    }
-    div[data-testid="column"] {
-        flex: 1 1 0% !important;
-        min-width: 0 !important;
-    }
+.stTextInput input, .stSelectbox div[data-baseweb="select"] {
+    background:#F5F5F7 !important;
+    border-radius:12px;border:1px solid #E5E5E7;
+}
 
-    /* 5. 暴力修复黑色下拉菜单 & 输入框 */
-    /* 修复输入框 */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
-        background-color: #F5F5F7 !important;
-        color: #1D1D1F !important;
-        border-radius: 12px !important;
-        border: 1px solid #E5E5E7 !important;
-    }
+div[data-baseweb="popover"], div[role="listbox"] {
+    background:#FFFFFF !important;color:#1D1D1F !important;
+}
 
-    /* 【关键】修复下拉菜单弹出后的黑色背景 */
-    div[data-baseweb="popover"], div[role="listbox"], ul {
-        background-color: #FFFFFF !important;
-        color: #1D1D1F !important;
-    }
-    div[role="option"] {
-        background-color: #FFFFFF !important;
-        color: #1D1D1F !important;
-    }
-    div[role="option"]:hover {
-        background-color: #0071E3 !important;
-        color: #FFFFFF !important;
-    }
+.stButton>button {
+    background:#0071E3;color:white;border-radius:99px;
+    padding:10px 50px;font-size:16px;border:none;
+}
+.stButton>button:hover {background:#0077ED;transform:scale(1.02);}
 
-    /* 强制标签文字颜色 */
-    div[data-testid="stWidgetLabel"] p, .stRadio label p {
-        color: #1D1D1F !important;
-        font-weight: 600 !important;
-    }
+.res-card {
+    background:#FFF;border-radius:18px;padding:20px;
+    border:1px solid #E5E5E7;margin-top:12px;
+    text-align:center;box-shadow:0 10px 20px rgba(0,0,0,0.03);
+}
 
-    /* 6. 按钮美化 */
-    div.stButton { text-align: center; margin-top: 15px; }
-    .stButton>button {
-        background: #0071E3 !important;
-        border-radius: 99px !important;
-        color: #FFFFFF !important;
-        padding: 8px 50px !important;
-        font-size: 16px !important;
-        border: none !important;
-    }
-    .stButton>button:hover { background: #0077ED !important; transform: scale(1.02); }
-
-    /* 7. 结果号牌卡片 */
-    .res-card {
-        background: #FFFFFF !important;
-        border-radius: 18px !important;
-        padding: 20px !important;
-        text-align: center !important;
-        border: 1px solid #E5E5E7 !important;
-        margin-top: 12px !important;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.03) !important;
-    }
-    .res-text { font-size: 24px !important; font-weight: 700 !important; color: #1D1D1F !important; }
-
-    /* 固定页脚 */
-    .fixed-footer {
-        position: fixed; bottom: 0; left: 0; width: 100%;
-        background: rgba(245, 245, 247, 0.95);
-        backdrop-filter: blur(10px);
-        text-align: center; padding: 15px 0;
-        border-top: 1px solid #D2D2D7; color: #86868B; font-size: 12px; z-index: 9999;
-    }
-
-    /* 隐藏干扰元素 */
-    header, footer, [data-testid="stHeader"], [data-testid="stToolbar"] { visibility: hidden; }
+.fixed-footer {
+    position:fixed;bottom:0;width:100%;
+    text-align:center;padding:15px 0;
+    border-top:1px solid #D2D2D7;
+    color:#86868B;font-size:12px;
+    background:rgba(245,245,247,0.95);
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ================= 2. 数据加载 =================
+# ================= 数据加载 =================
 EXCEL_FILE = "rose_data.xlsx"
 
 @st.cache_data
 def load_db(file):
-    if not os.path.exists(file): return None
+    if not os.path.exists(file):
+        return None
     xls = pd.ExcelFile(file)
     return {
         "color": pd.read_excel(xls, "色核库"),
@@ -143,72 +85,77 @@ def load_db(file):
 
 db = load_db(EXCEL_FILE)
 
-# ================= 3. UI 交互 =================
+if db is None:
+    st.error("❌ 找不到 rose_data.xlsx")
+    st.stop()
 
+# ================= 预处理加速 =================
+@st.cache_data
+def preprocess_db(db):
+    return {
+        "color_map": {k: v["汉字"].tolist() for k, v in db["color"].groupby("分类")},
+        "prefix_map": {k: v["汉字"].tolist() for k, v in db["prefix"].groupby("性状名称")},
+        "suffix_map": {(k,a): v["汉字"].tolist() for (k,a), v in db["suffix"].groupby(["性状名称","属性"])}
+    }
+
+maps = preprocess_db(db)
+
+# ================= 标题 =================
 st.markdown("""
 <div class="header-box">
-    <div class="artistic-title">命名工作站</div>
-    <div class="artistic-subtitle">Pure Artistry for Every Rose</div>
+<div class="artistic-title">命名工作站</div>
+<div class="artistic-subtitle">PURE ARTISTRY FOR EVERY ROSE</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 核心面板
-with st.container(border=True):
-    c1, c2 = st.columns(2)
-    with c1: brand = st.text_input("品牌词", value="中农")
-    with c2: color_cat = st.selectbox("核心色系 (主色)", db["color"]["分类"].unique())
-    
-    c3, c4 = st.columns(2)
-    with c3: pre_cat = st.selectbox("前缀性状 (可选)", ["(无)"] + db["prefix"]["性状名称"].unique().tolist())
-    with c4: suf_cat = st.selectbox("后缀性状 (必选)", db["suffix"]["性状名称"].unique())
-    
-    c5, c6 = st.columns(2)
-    with c5: attr_mode = st.radio("属性偏好", ["表型", "意象"], horizontal=True)
-    with c6: tail_cat = st.selectbox("第二色核 (可选)", ["(无)"] + db["color"]["分类"].unique().tolist())
-    
-    run_gen = st.button("智能生成方案")
+# ================= 控制台 =================
+st.markdown('<div class="panel">', unsafe_allow_html=True)
 
-# ================= 4. 渲染结果 =================
+c1, c2 = st.columns(2)
+with c1:
+    brand = st.text_input("品牌词", "中农")
+with c2:
+    color_cat = st.selectbox("核心色系", list(maps["color_map"].keys()))
 
-def generate_logic(count=10):
-    core_chars = db["color"][db["color"]["分类"] == color_cat]["汉字"].tolist()
-    p_pool = db["prefix"][db["prefix"]["性状名称"] == pre_cat]["汉字"].tolist() if pre_cat != "(无)" else []
-    s_pool = db["suffix"][(db["suffix"]["性状名称"] == suf_cat) & (db["suffix"]["属性"] == attr_mode)]["汉字"].tolist()
-    if not s_pool: s_pool = db["suffix"][db["suffix"]["性状名称"] == suf_cat]["汉字"].tolist()
-    t_pool = db["color"][db["color"]["分类"] == tail_cat]["汉字"].tolist() if tail_cat != "(无)" else []
+c3, c4 = st.columns(2)
+with c3:
+    pre_cat = st.selectbox("前缀性状", ["(无)"] + list(maps["prefix_map"].keys()))
+with c4:
+    suf_cat = st.selectbox("后缀性状", list({k for k,a in maps["suffix_map"].keys()}))
+
+c5, c6 = st.columns(2)
+with c5:
+    attr_mode = st.radio("属性偏好", ["表型", "意象"], horizontal=True)
+with c6:
+    tail_cat = st.selectbox("第二色核", ["(无)"] + list(maps["color_map"].keys()))
+
+run_gen = st.button("智能生成方案")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ================= 安全生成 =================
+def safe_choice(lst, default=""):
+    return random.choice(lst) if lst else default
+
+def generate_logic(n=10):
+    core = maps["color_map"].get(color_cat, [])
+    pre = maps["prefix_map"].get(pre_cat, []) if pre_cat != "(无)" else []
+    suf = maps["suffix_map"].get((suf_cat, attr_mode), []) or \
+          [v for (k,a),v in maps["suffix_map"].items() if k==suf_cat][0]
+    tail = maps["color_map"].get(tail_cat, []) if tail_cat != "(无)" else []
+
     results = []
-    for _ in range(count):
-        c = random.choice(core_chars); p = random.choice(p_pool) if p_pool else ""; s = random.choice(s_pool); t = random.choice(t_pool) if t_pool else ""
-        results.append(f"'{brand} {p}{c}{s}{t}'")
+    for _ in range(n):
+        name = f"{brand} {safe_choice(pre)}{safe_choice(core,'玫')}{safe_choice(suf,'韵')}{safe_choice(tail)}"
+        results.append(name)
     return results
 
+# ================= 结果展示 =================
 if run_gen:
-    names = generate_logic(10)
-    st.markdown('<div style="max-width:580px; margin: 0 auto; padding-top:10px;">', unsafe_allow_html=True)
-    res_cols = st.columns(2)
-    for idx, full_name in enumerate(names):
-        with res_cols[idx % 2]:
-            st.markdown(f"""<div class="res-card"><div style="font-size:10px; color:#0071E3; font-weight:700;">NO.{idx+1:02d}</div><div class="res-text">{full_name}</div></div>""", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-else:
-    st.markdown('<p style="text-align:center; color:#86868B; margin-top: 40px; font-size:14px;">点击上方 <b>Run</b> 按钮获得 10 组预选建议</p>', unsafe_allow_html=True)
+    names = generate_logic()
+    cols = st.columns(2)
+    for i, name in enumerate(names):
+        with cols[i % 2]:
+            st.markdown(f"<div class='res-card'><b>NO.{i+1:02d}</b><br>{name}</div>", unsafe_allow_html=True)
 
-# ================= 5. 字库展示 =================
-st.write("")
-st.markdown('<div style="text-align:center; font-family:serif; font-size:20px; font-weight:700; margin-bottom:15px; color:#1D1D1F;">字库全览</div>', unsafe_allow_html=True)
-t1, t2, t3 = st.tabs(["核心色", "修饰前缀", "性状后缀"])
-with t1:
-    for cat in db["color"]["分类"].unique():
-        chars = db["color"][db["color"]["分类"] == cat]["汉字"].unique()
-        st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
-with t2:
-    for cat in db["prefix"]["性状名称"].unique():
-        chars = db["prefix"][db["prefix"]["性状名称"] == cat]["汉字"].unique()
-        st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
-with t3:
-    for cat in db["suffix"]["性状名称"].unique():
-        chars = db["suffix"][db["suffix"]["性状名称"] == cat]["汉字"].tolist()
-        st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
-
-# 6. 页脚
-st.markdown("""<div class="fixed-footer">© 2026 肆叁叁月季起名社</div>""", unsafe_allow_html=True)
+# ================= 页脚 =================
+st.markdown("<div class='fixed-footer'>© 2026 肆叁叁月季起名社</div>", unsafe_allow_html=True)
