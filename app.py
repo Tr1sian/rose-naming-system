@@ -199,13 +199,13 @@ if run_gen:
     st.markdown('</div>', unsafe_allow_html=True)
 else:
     # 初始状态下的提示语，点击 Run 后这块代码将不再执行（消失）
-    st.markdown('<p class="run-hint">点击上方 <b>Run</b> 按钮以获得 10 组预选名称建议</p>', unsafe_allow_html=True)
+    st.markdown('<p class="run-hint">点击上方按钮以获得 10 组预选名称建议</p>', unsafe_allow_html=True)
 
 
 # ================= 5. 字库全览 =================
 st.markdown('<div class="library-section">', unsafe_allow_html=True)
 st.markdown('<div style="font-family:serif; font-size:22px; font-weight:700; margin-bottom:20px; color:#1D1D1F;">字库全览</div>', unsafe_allow_html=True)
-t1, t2, t3 = st.tabs(["🌈 核心色", "🏷️ 修饰前缀", "✨ 性状后缀"])
+t1, t2, t3 = st.tabs(["核心色", "修饰前缀", "性状后缀"])
 with t1:
     for cat in db["color"]["分类"].unique():
         chars = db["color"][db["color"]["分类"] == cat]["汉字"].unique()
