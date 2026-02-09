@@ -3,137 +3,104 @@ import pandas as pd
 import random
 import os
 
-# ================= 1. 极简苹果玻璃美学 (UI 精调版) =================
-st.set_page_config(page_title="RoseNamer Elite", page_icon="🍎", layout="centered")
+# ================= 1. Apple Pro 双模玻璃美学 (CSS) =================
+st.set_page_config(page_title="RoseNamer Pro", page_icon="🍎", layout="wide")
 
 st.markdown("""
 <style>
+    /* 引入思源宋体和 Inter */
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Inter:wght@300;400;600&display=swap');
 
-    /* 1. 总背景 */
-    .stApp {
-        background-color: #F5F5F7 !important;
-        background-image: radial-gradient(circle at 50% 10%, #FFFFFF 0%, #E2E2E7 100%) !important;
+    /* 苹果风格：响应式毛玻璃面板 (自动适配深色/浅色模式) */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        /* 背景色使用半透明，让底层背景透过来 */
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(40px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
+        
+        /* 动态边框：根据背景自动适应 */
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 32px !important;
+        
+        /* 深度阴影 */
+        box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important;
+        
+        max-width: 680px !important;
+        margin: 0 auto !important;
+        padding: 50px !important;
     }
 
-    /* 2. 标题区 */
+    /* 标题艺术化 */
     .header-box {
-        padding-top: 80px;
-        padding-bottom: 20px;
+        padding-top: 60px;
+        padding-bottom: 40px;
         text-align: center;
     }
     .artistic-title {
         font-family: 'Noto Serif SC', serif;
-        font-size: 54px;
+        font-size: 68px;
         font-weight: 900;
-        color: #1D1D1F;
         letter-spacing: 16px;
-        margin-bottom: 5px;
-    }
-    .artistic-subtitle {
-        font-family: 'Inter', sans-serif;
-        color: #86868B;
-        font-size: 13px;
-        letter-spacing: 6px;
-        text-transform: uppercase;
-        opacity: 0.6;
+        margin-bottom: 10px;
+        /* 渐变字色 */
+        background: linear-gradient(180deg, #5e5e5e 0%, #a1a1a1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    /* 3. 参数区：纯白立体玻璃面板 */
-    div[data-testid="stVerticalBlockBorderWrapper"]:first-of-type {
-        max-width: 580px !important;
-        margin: 0 auto !important;
-        background: rgba(255, 255, 255, 0.92) !important;
-        backdrop-filter: blur(50px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(50px) saturate(180%) !important;
-        border: 2px solid #FFFFFF !important;
-        border-radius: 32px !important;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.05), inset 0 1px 2px rgba(255,255,255,0.5) !important;
-        padding: 40px !important;
-    }
-
-    /* 强制并排 */
+    /* 强制列并行展示 (解决堆叠问题) */
     div[data-testid="stHorizontalBlock"] {
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        align-items: center !important;
-    }
-    div[data-testid="column"] {
-        width: 50% !important;
-        min-width: 0 !important;
-        flex: 1 1 auto !important;
+        gap: 15px !important;
     }
 
-    /* 压缩间距 */
-    div[data-testid="stVerticalBlock"] > div {
-        padding-top: 0rem !important;
-        padding-bottom: 0.5rem !important;
-    }
-
-    /* 4. 按钮美化 */
-    div.stButton { text-align: center; margin-top: 15px; }
+    /* 按钮样式：苹果经典蓝色 */
     .stButton>button {
         background: #0071E3 !important;
-        border: none !important;
-        border-radius: 99px !important;
         color: white !important;
-        padding: 8px 50px !important;
-        font-size: 16px !important;
-        transition: 0.3s;
+        border-radius: 99px !important;
+        padding: 10px 60px !important;
+        font-size: 17px !important;
+        border: none !important;
+        width: 100% !important;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .stButton>button:hover { background: #0077ED !important; transform: scale(1.03); }
-
-    /* 5. 提示语与结果号牌 */
-    .run-hint {
-        text-align: center;
-        color: #86868B;
-        font-size: 14px;
-        margin: 40px 0;
-        letter-spacing: 1px;
+    .stButton>button:hover {
+        background: #0077ED !important;
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(0,113,227,0.4);
     }
 
+    /* 结果号牌 */
     .res-card {
-        background: #FFFFFF;
-        border-radius: 18px;
-        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
         text-align: center;
-        border: 1px solid #E5E5E7;
-        margin-top: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 20px;
     }
-    .res-text { font-size: 24px; font-weight: 700; color: #1D1D1F; letter-spacing: -0.5px; }
+    .res-text { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
 
-    /* 6. 字库展示区 */
-    .library-section {
-        max-width: 600px;
-        margin: 40px auto 120px auto;
-        text-align: center;
-    }
+    /* 字库全览轻量化 */
     .lib-tag {
         display: inline-block;
-        background: rgba(255,255,255,0.7);
-        padding: 3px 8px;
-        border-radius: 6px;
-        margin: 2px;
-        font-size: 12px;
-        color: #6E6E73;
-        border: 1px solid rgba(0,0,0,0.03);
+        padding: 4px 12px;
+        border-radius: 8px;
+        margin: 4px;
+        font-size: 13px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* 固定页脚 */
-    .fixed-footer {
-        position: fixed; bottom: 0; left: 0; width: 100%;
-        background: rgba(245, 245, 247, 0.9);
-        backdrop-filter: blur(15px);
-        text-align: center; padding: 15px 0;
-        border-top: 1px solid #D2D2D7; color: #86868B; font-size: 12px; z-index: 1000;
-    }
-
+    /* 隐藏原生干扰 */
     header, footer, [data-testid="stHeader"] { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
-# ================= 2. 数据加载 =================
+# ================= 2. 数据加载逻辑 =================
 EXCEL_FILE = "rose_data.xlsx"
 
 @st.cache_data
@@ -148,77 +115,104 @@ def load_db(file):
 
 db = load_db(EXCEL_FILE)
 
-# ================= 3. UI 主体逻辑 =================
+# ================= 3. UI 交互界面 =================
 
 st.markdown("""
 <div class="header-box">
     <div class="artistic-title">命名工作站</div>
-    <div class="artistic-subtitle">Pure Artistry for Every Rose</div>
+    <div class="artistic-subtitle">CRAFTING SOULS FOR EVERY ROSE</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 【参数面板】
 with st.container(border=True):
-    c1, c2 = st.columns(2)
-    with c1: brand = st.text_input("品牌词", value="中农")
-    with c2: color_cat = st.selectbox("核心色系", db["color"]["分类"].unique())
-    
-    c3, c4 = st.columns(2)
-    with c3: pre_cat = st.selectbox("前缀性状 (可选)", ["(无)"] + db["prefix"]["性状名称"].unique().tolist())
-    with c4: suf_cat = st.selectbox("后缀性状 (必选)", db["suffix"]["性状名称"].unique())
-    
-    c5, c6 = st.columns(2)
-    with c5: attr_mode = st.radio("属性偏好", ["表型", "意象"], horizontal=True)
-    with c6: tail_cat = st.selectbox("第二色核 (可选)", ["(无)"] + db["color"]["分类"].unique().tolist())
-    
-    run_gen = st.button("智能生成方案")
+    # 第一排：品牌与色核分级
+    c1, c2, c3 = st.columns([1, 1.2, 1.2])
+    with c1:
+        brand = st.text_input("品牌词", value="中农")
+    with c2:
+        color_cat = st.selectbox("核心色系", db["color"]["分类"].unique())
+    with c3:
+        # 新增：方案类型二级联动
+        scheme_opts = db["color"][db["color"]["分类"] == color_cat]["方案"].unique().tolist()
+        scheme_sel = st.selectbox("方案风格", scheme_opts)
 
-# ================= 4. 条件渲染 (关键修正) =================
+    # 第二排：前缀与后缀分类
+    c4, c5 = st.columns(2)
+    with c4:
+        pre_cat = st.selectbox("前缀性状 (可选)", ["(无)"] + db["prefix"]["性状名称"].unique().tolist())
+    with c5:
+        suf_cat = st.selectbox("后缀性状 (必选)", db["suffix"]["性状名称"].unique())
+
+    # 第三排：后缀偏好与尾缀联动
+    c6, c7, c8 = st.columns([1, 1.2, 1.2])
+    with c6:
+        attr_mode = st.radio("后缀意境", ["表型", "意象"], horizontal=True)
+    with c7:
+        tail_cat = st.selectbox("第二色核 (可选)", ["(无)"] + db["color"]["分类"].unique().tolist())
+    with c8:
+        if tail_cat != "(无)":
+            # 尾缀方案联动
+            t_schemes = db["color"][db["color"]["分类"] == tail_cat]["方案"].unique().tolist()
+            tail_scheme = st.selectbox("尾缀风格", t_schemes)
+        else:
+            tail_scheme = None
+
+    run_gen = st.button("智能生成备选方案")
+
+# ================= 4. 结果生成逻辑 =================
 
 def generate_logic(count=10):
-    core_chars = db["color"][db["color"]["分类"] == color_cat]["汉字"].tolist()
+    # 核心色池：根据色系和方案双重过滤
+    core_chars = db["color"][(db["color"]["分类"] == color_cat) & (db["color"]["方案"] == scheme_sel)]["汉字"].tolist()
+    
+    # 前缀池
     p_pool = db["prefix"][db["prefix"]["性状名称"] == pre_cat]["汉字"].tolist() if pre_cat != "(无)" else []
+    
+    # 后缀池
     s_pool = db["suffix"][(db["suffix"]["性状名称"] == suf_cat) & (db["suffix"]["属性"] == attr_mode)]["汉字"].tolist()
     if not s_pool: s_pool = db["suffix"][db["suffix"]["性状名称"] == suf_cat]["汉字"].tolist()
-    t_pool = db["color"][db["color"]["分类"] == tail_cat]["汉字"].tolist() if tail_cat != "(无)" else []
+    
+    # 尾缀池
+    t_pool = []
+    if tail_cat != "(无)" and tail_scheme:
+        t_pool = db["color"][(db["color"]["分类"] == tail_cat) & (db["color"]["方案"] == tail_scheme)]["汉字"].tolist()
+
     results = []
     for _ in range(count):
-        c = random.choice(core_chars); p = random.choice(p_pool) if p_pool else ""; s = random.choice(s_pool); t = random.choice(t_pool) if t_pool else ""
+        c = random.choice(core_chars) if core_chars else ""
+        p = random.choice(p_pool) if p_pool else ""
+        s = random.choice(s_pool) if s_pool else ""
+        t = random.choice(t_pool) if t_pool else ""
         results.append(f"'{brand} {p}{c}{s}{t}'")
     return results
 
-# 逻辑判断：如果点击了按钮，则显示结果；否则显示提示文字
 if run_gen:
-    # 结果显示逻辑
     names = generate_logic(10)
-    st.markdown('<div style="max-width:580px; margin: 0 auto; padding-top:20px;">', unsafe_allow_html=True)
+    st.markdown('<div style="max-width:550px; margin: 0 auto; padding-top:20px;">', unsafe_allow_html=True)
     res_cols = st.columns(2)
     for idx, full_name in enumerate(names):
         with res_cols[idx % 2]:
-            st.markdown(f"""<div class="res-card"><div style="font-size:10px; color:#0071E3; font-weight:700;">NO.{idx+1:02d}</div><div class="res-text">{full_name}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="res-card"><div style="font-size:10px; color:#0071E3; font-weight:700;">SELECTION {idx+1:02d}</div><div class="res-text">{full_name}</div></div>""", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 else:
-    # 初始状态下的提示语，点击 Run 后这块代码将不再执行（消失）
-    st.markdown('<p class="run-hint">点击上方按钮以获得 10 组预选名称建议</p>', unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center; color:#86868B; margin-top:30px; letter-spacing:2px;">点击上方按钮开启 AI 灵感推荐</p>', unsafe_allow_html=True)
 
-
-# ================= 5. 字库全览 =================
-st.markdown('<div class="library-section">', unsafe_allow_html=True)
-st.markdown('<div style="font-family:serif; font-size:22px; font-weight:700; margin-bottom:20px; color:#1D1D1F;">字库全览</div>', unsafe_allow_html=True)
-t1, t2, t3 = st.tabs(["核心色", "修饰前缀", "性状后缀"])
-with t1:
-    for cat in db["color"]["分类"].unique():
-        chars = db["color"][db["color"]["分类"] == cat]["汉字"].unique()
-        st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
-with t2:
-    for cat in db["prefix"]["性状名称"].unique():
-        chars = db["prefix"][db["prefix"]["性状名称"] == cat]["汉字"].unique()
-        st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
-with t3:
-    for cat in db["suffix"]["性状名称"].unique():
-        chars = db["suffix"][db["suffix"]["性状名称"] == cat]["汉字"].tolist()
-        st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+# ================= 5. 字库展示 (置底) =================
+st.write("")
+with st.expander("📚 点击查看当前分类下的全部字库"):
+    t1, t2, t3 = st.tabs(["🌈 核心色", "🏷️ 修饰前缀", "✨ 性状后缀"])
+    with t1:
+        for cat in db["color"]["分类"].unique():
+            chars = db["color"][db["color"]["分类"] == cat]["汉字"].unique()
+            st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
+    with t2:
+        for cat in db["prefix"]["性状名称"].unique():
+            chars = db["prefix"][db["prefix"]["性状名称"] == cat]["汉字"].unique()
+            st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
+    with t3:
+        for cat in db["suffix"]["性状名称"].unique():
+            chars = db["suffix"][db["suffix"]["性状名称"] == cat]["汉字"].tolist()
+            st.markdown(f"**{cat}**：{' '.join([f'<span class=\"lib-tag\">{c}</span>' for c in chars])}", unsafe_allow_html=True)
 
 # 6. 固定页脚
-st.markdown("""<div class="fixed-footer">© 2026 肆叁叁月季起名社</div>""", unsafe_allow_html=True)
+st.markdown("""<div class="fixed-footer">月季起名社 &nbsp; | &nbsp; © 2024 中农育种工作站 &nbsp; | &nbsp; 遵循《国际栽培植物命名法规》</div>""", unsafe_allow_html=True)
