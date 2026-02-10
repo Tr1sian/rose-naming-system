@@ -5,7 +5,7 @@ import os
 
 # ================= 1. Apple Pro 视觉引擎 (极致窄版 & 纯黑文字) =================
 # 布局改为 centered
-st.set_page_config(page_title="RoseNamer Pro", page_icon="🍎", layout="centered")
+st.set_page_config(page_title="肆叁叁月季起名社", page_icon="💐", layout="centered")
 
 st.markdown("""
 <style>
